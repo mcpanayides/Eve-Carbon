@@ -1,0 +1,11 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+#Ignore secure as it holds sensitive information like API keys, database passwords, etc.
+./secure.py
+secure.py
+
+# The virtual environment directory
+# It is created by the venv module and contains the Python interpreter and libraries
+./venv/
+venv/
+# The virtual environment directory
+
