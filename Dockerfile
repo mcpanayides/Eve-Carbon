@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Set work dir
-WORKDIR /
+WORKDIR /evecarbon
 
 # Install dependencies
 COPY requirements.txt .
@@ -17,6 +17,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8000
+EXPOSE 8080
 
 # Run migrations and start dev server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

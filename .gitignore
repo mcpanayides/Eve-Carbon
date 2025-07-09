@@ -7,5 +7,5 @@ secure.py
 # It is created by the venv module and contains the Python interpreter and libraries
 ./venv/
 venv/
-# The virtual environment directory
+.env
 

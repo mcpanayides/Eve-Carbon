@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from secure import client_id, client_secret, callback_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',  # Add this for PostgreSQL support
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',    # Required for social accounts
+    'allauth.socialaccount.providers.eveonline', # EVE Online specific apps
+    'allauth.socialaccount.providers.discord', # Discord provider for social login will be used for cross-referencing
     'evecarbon',  # Your main app
 ]
 
@@ -55,15 +62,30 @@ MIDDLEWARE = [
     'django.middleware.cache.UpdateCacheMiddleware',  # Optional: for caching
     'django.middleware.cache.FetchFromCacheMiddleware',  # Optional: for caching
     'django.middleware.security.SecurityMiddleware',  # Optional: for security enhancements
-    'django.middleware.http.ConditionalGetMiddleware',  # Optional: for conditional GET support
+    'django.middleware.http.ConditionalGetMiddleware',  # Optional: for conditional GET support"
+    'allauth.account.middleware.AccountMiddleware',  # Required for allauth
 ]
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'eveonline': {
+        # EVE Online provider settings
+        'APP': {
+            'client_id': client_id,
+            'secret': client_secret,
+            'key': callback_url
+        }
+    }
+}
+
+LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'evecarbon.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,6 +96,15 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1 # Required for allauth
 
 WSGI_APPLICATION = 'evecarbon.wsgi.application'
 

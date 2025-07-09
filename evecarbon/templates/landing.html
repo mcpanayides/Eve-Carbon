@@ -1,0 +1,36 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EVE Carbon - Landing</title>
+  <link href="/css/font.css" rel="stylesheet" />
+  <link href="/css/theme.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body style="background-image: url('/img/bg_main.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <main>
+      <h1 class="esi-hero">EVE Carbo1n</h1>
+      <p class="esi-hero h5" >Eve Carbon is a powerful, all-in-one web application built with Python 3 and Django, designed to be a Swiss Army knife
+         for EVE Online pilots and fleet commanders. From managing Fleet Ship Replacement Programs (SRP) and market orders, to hosting a built-in
+         community forum, Eve Carbon brings essential tools together in one seamless platform.</p>
+      <p class="lead">
+        <a href="{% provider_login_url 'eveonline' %}">
+            <img src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png" alt="Login with EVE Online">
+        </a>
+      </p>
+    </main>
+
+    <footer class="mt-auto">
+      <p>© 2025 EVE Carbon • All EVE Online related materials are property of CCP Games</p>
+    </footer>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
