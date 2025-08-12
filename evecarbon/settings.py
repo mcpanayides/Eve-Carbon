@@ -12,8 +12,28 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
-from secure import client_id, client_secret, callback_url
 
+# Import your secrets module (you already use this pattern)
+try:
+    from secrets import (
+        EVE_CLIENT_ID,
+        EVE_CLIENT_SECRET,
+        EVE_CALLBACK_URL,
+        EVE_ALLOWED_ALLIANCE_IDS,
+        EVE_ALLOWED_CORPORATION_IDS,
+        EVE_CHARACTER_ACL,
+    )
+except Exception:
+    # let manage.py collectstatic/migrate still run even if secrets missing
+    EVE_CLIENT_ID = EVE_CLIENT_SECRET = EVE_CALLBACK_URL = ""
+    EVE_ALLOWED_ALLIANCE_IDS = []
+    EVE_ALLOWED_CORPORATION_IDS = []
+    EVE_CHARACTER_ACL = []
+
+INSTALLED_APPS = [
+    # ...
+    "evecarbon.auth_sso",
+]
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -47,6 +67,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.eveonline', # EVE Online specific apps
     'allauth.socialaccount.providers.discord', # Discord provider for social login will be used for cross-referencing
     'evecarbon',  # Your main app
+    'evecarbon.auth_sso', #auth_app
 ]
 
 MIDDLEWARE = [
@@ -81,7 +102,8 @@ SOCIALACCOUNT_PROVIDERS = {
 LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'evecarbon.urls'
-
+# Make sure templates can find our simple pages
+TEMPLATES[0]["DIRS"] = TEMPLATES[0].get("DIRS", []) + [os.path.join(BASE_DIR, "evecarbon", "auth_sso", "templates")]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
