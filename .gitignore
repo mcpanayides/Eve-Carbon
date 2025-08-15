@@ -2,6 +2,8 @@
 #Ignore secure as it holds sensitive information like API keys, database passwords, etc.
 ./secure.py
 secure.py
+secrets.py
+./secrets.py
 
 # The virtual environment directory
 # It is created by the venv module and contains the Python interpreter and libraries

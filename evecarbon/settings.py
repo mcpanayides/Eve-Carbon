@@ -16,16 +16,16 @@ from pathlib import Path
 # Import your secrets module (you already use this pattern)
 try:
     from secrets import (
-        EVE_CLIENT_ID,
-        EVE_CLIENT_SECRET,
-        EVE_CALLBACK_URL,
+        client_id,
+        client_secret,
+        callback_url,
         EVE_ALLOWED_ALLIANCE_IDS,
         EVE_ALLOWED_CORPORATION_IDS,
         EVE_CHARACTER_ACL,
     )
 except Exception:
     # let manage.py collectstatic/migrate still run even if secrets missing
-    EVE_CLIENT_ID = EVE_CLIENT_SECRET = EVE_CALLBACK_URL = ""
+    client_id = client_secret = callback_url = ""
     EVE_ALLOWED_ALLIANCE_IDS = []
     EVE_ALLOWED_CORPORATION_IDS = []
     EVE_CHARACTER_ACL = []
@@ -86,28 +86,14 @@ MIDDLEWARE = [
     'django.middleware.http.ConditionalGetMiddleware',  # Optional: for conditional GET support"
     'allauth.account.middleware.AccountMiddleware',  # Required for allauth
 ]
-
-# Provider specific settings
-SOCIALACCOUNT_PROVIDERS = {
-    'eveonline': {
-        # EVE Online provider settings
-        'APP': {
-            'client_id': client_id,
-            'secret': client_secret,
-            'key': callback_url
-        }
-    }
-}
-
 LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'evecarbon.urls'
 # Make sure templates can find our simple pages
-TEMPLATES[0]["DIRS"] = TEMPLATES[0].get("DIRS", []) + [os.path.join(BASE_DIR, "evecarbon", "auth_sso", "templates")]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'evecarbon' / 'auth_sso' / 'auth_sso/templates' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

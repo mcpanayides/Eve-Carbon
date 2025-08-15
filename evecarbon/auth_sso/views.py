@@ -11,13 +11,14 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from .models import Alliance
 from jwt import PyJWKClient, decode as jwt_decode, InvalidTokenError
 
 # Pull secrets + allowlists from your secrets.py
-from secrets import (
-    EVE_CLIENT_ID,
-    EVE_CLIENT_SECRET,
-    EVE_CALLBACK_URL,
+from evecarbon.secrets import (
+    client_id,
+    client_secret,
+    callback_url,
     EVE_ALLOWED_ALLIANCE_IDS,
     EVE_ALLOWED_CORPORATION_IDS,
     EVE_CHARACTER_ACL,
@@ -27,6 +28,12 @@ SSO_AUTHORIZE = "https://login.eveonline.com/v2/oauth/authorize"
 SSO_TOKEN = "https://login.eveonline.com/v2/oauth/token"
 SSO_JWKS = "https://login.eveonline.com/.well-known/jwks.json"
 ESI_BASE = "https://esi.evetech.net"
+
+#landing page view
+def landing(request):
+    # Render your landing page template
+    return render(request, "auth_sso/landing.html")
+
 
 # Minimal scope: "publicData" is enough to get an access token + character identity.
 # If you later need corp director things, add scopes accordingly.
@@ -39,15 +46,15 @@ def eve_login(request):
 
     params = {
         "response_type": "code",
-        "redirect_uri": EVE_CALLBACK_URL,
-        "client_id": EVE_CLIENT_ID,
+        "redirect_uri": callback_url,
+        "client_id": client_id,
         "scope": " ".join(EVE_SCOPES),
         "state": state,
     }
     return redirect(f"{SSO_AUTHORIZE}?{urllib.parse.urlencode(params)}")
 
 def _exchange_code_for_token(code: str) -> dict:
-    auth_header = base64.b64encode(f"{EVE_CLIENT_ID}:{EVE_CLIENT_SECRET}".encode()).decode()
+    auth_header = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
     headers = {
         "Authorization": f"Basic {auth_header}",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -68,7 +75,7 @@ def _validate_jwt(access_token: str) -> dict:
         access_token,
         signing_key.key,
         algorithms=["RS256"],
-        audience=EVE_CLIENT_ID,
+        audience=client_id,
         options={"require": ["exp", "iss", "sub"]},
     )
     # Typical 'sub' looks like "CHARACTER:EVE:123456789"
@@ -97,8 +104,13 @@ def _fetch_affiliation(character_id: int) -> tuple[int | None, int | None]:
 def _is_authorized(character_id: int, corporation_id: int | None, alliance_id: int | None) -> bool:
     if character_id in EVE_CHARACTER_ACL:
         return True
-    if alliance_id and alliance_id in EVE_ALLOWED_ALLIANCE_IDS:
-        return True
+    if alliance_id:
+        try:
+            alliance = Alliance.objects.get(alliance_id=alliance_id)
+            if alliance.blue:
+                return True
+        except Alliance.DoesNotExist:
+            pass
     if corporation_id and corporation_id in EVE_ALLOWED_CORPORATION_IDS:
         return True
     return False

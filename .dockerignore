@@ -26,5 +26,6 @@
 LICENSE
 README.md
 secrets.py
+secure.py
 .DS_Store
 .env
